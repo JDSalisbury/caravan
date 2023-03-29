@@ -1,5 +1,5 @@
 from django.db import models
-
+from config.constants import CARAVAN_BIOMES
 # Create your models here.
 
 
@@ -49,45 +49,20 @@ class Loot(models.Model):
 class Caravan(models.Model):
     name = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
-    biome = models.CharField(max_length=50, choices=(
-        ('forest', 'Forest'),
-        ('island', 'Island'),
-        ('tropical', 'Tropical'),
-        ('taiga', 'Taiga'),
-        ('plateau', 'Plateau'),
-        ('mountain', 'Mountain'),
-        ('desert', 'Desert'),
-        ('tundra', 'Tundra'),
-        ('swamp', 'Swamp'),
-        ('ocean', 'Ocean'),
-        ('plains', 'Plains'),
-        ('jungle', 'Jungle'),
-        ('volcano', 'Volcano'),
-        ('cave', 'Cave'),
-        ('city', 'City'),
-        ('castle', 'Castle'),
-        ('dungeon', 'Dungeon'),
-        ('ruins', 'Ruins'),
-        ('graveyard', 'Graveyard'),
-        ('cemetery', 'Cemetery'),
-        ('temple', 'Temple'),
-        ('church', 'Church'),
-        ('library', 'Library'),
-        ('school', 'School'),
-        ('hospital', 'Hospital'),
-        ('museum', 'Museum'),
-        ('zoo', 'Zoo'),
-        ('farm', 'Farm'),
-        ('factory', 'Factory'),
-        ('mine', 'Mine'),
-        ('laboratory', 'Laboratory'),
-    ))
-
+    biome = models.CharField(max_length=50, choices=CARAVAN_BIOMES)
     level = models.PositiveIntegerField()
 
     def __str__(self):
         return f"{self.name} ({self.location})"
 
+
+# generate list of traders based on biome and level and add them to the caravan, no duplicate jobs
+
     def generate_traders(self):
-        # TODO: generate list of traders based on biome and level
-        pass
+        trader_list = Trader.objects.filter(caravan__isnull=True)
+        for trader in trader_list:
+            if self.level >= trader.job.level_requirement and self.biome in trader.job.biomes:
+                self.traders.add(trader)
+                trader.caravan = self
+                trader.save()
+        return self.traders.all()
