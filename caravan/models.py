@@ -35,7 +35,6 @@ class Caravan(models.Model):
     location = models.CharField(max_length=50)
     biome = models.CharField(max_length=50, choices=CARAVAN_BIOMES)
     level = models.IntegerField()
-    traders = models.ManyToManyField('Trader')
 
     def __str__(self):
         return self.name
