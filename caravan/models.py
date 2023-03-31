@@ -35,33 +35,27 @@ class Caravan(models.Model):
     location = models.CharField(max_length=50)
     biome = models.CharField(max_length=50, choices=CARAVAN_BIOMES)
     level = models.IntegerField()
+    traders = models.ManyToManyField('Trader', blank=True)
 
     def __str__(self):
         return self.name
 
 # generate list of traders based on biome and level and add them to the caravan, no duplicate jobs
 
-    def generate_traders(self):
-        trader_list = Trader.objects.filter(caravan__isnull=True)
-        for trader in trader_list:
-            if self.level >= trader.job.level_requirement and self.biome in trader.job.biomes:
-                self.traders.add(trader)
-                trader.caravan = self
-                trader.save()
-        return self.traders.all()
+    def generate_random_traders(self, num_traders=3):
+        traders = set()
+        while len(traders) < num_traders:
+            trader = Trader.objects.all().order_by('?').first()
+            if trader.job not in [trader.job for trader in traders]:
+                traders.add(trader)
 
-    def save(self, *args, **kwargs):
-        # Check the number of traders with the same job
-        for job in Job.objects.all():
-            if self.traders.filter(job=job).count() > 1:
-                raise ValueError('Too many traders with the same job')
-        super().save(*args, **kwargs)
+        self.traders.set(traders)
+        self.save()
 
 
 class Trader(models.Model):
     name = models.CharField(max_length=50)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    caravan = models.ForeignKey(Caravan, on_delete=models.CASCADE)
     starting_gold = models.PositiveIntegerField()
 
     def __str__(self):
