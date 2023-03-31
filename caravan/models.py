@@ -2,6 +2,16 @@ from django.db import models
 from config.constants import CARAVAN_BIOMES, ITEM_CATEGORIES
 # Create your models here.
 
+# TODO: Create a way to link Biome to Types of Items that could show up, and possible types of traders selling said items
+
+
+class Biome(models.Model):
+    name = models.CharField(max_length=50, choices=ITEM_CATEGORIES)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
 
 class Job(models.Model):
     name = models.CharField(max_length=50)
@@ -25,6 +35,7 @@ class Item(models.Model):
     armor_type = models.CharField(max_length=50, null=True, blank=True)
     property = models.CharField(max_length=50, null=True, blank=True)
     power = models.CharField(max_length=50, null=True, blank=True)
+    biomes = models.ManyToManyField(Biome)
 
     def __str__(self):
         return self.name
@@ -57,6 +68,7 @@ class Trader(models.Model):
     name = models.CharField(max_length=50)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     starting_gold = models.PositiveIntegerField()
+    biomes = models.ManyToManyField(Biome)
 
     def __str__(self):
         return self.name
