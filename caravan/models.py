@@ -1,12 +1,11 @@
 from django.db import models
 from config.constants import CARAVAN_BIOMES, ITEM_CATEGORIES
 # Create your models here.
-
-# TODO: Create a way to link Biome to Types of Items that could show up, and possible types of traders selling said items
+from django.db.models import Q
 
 
 class Biome(models.Model):
-    name = models.CharField(max_length=50, choices=ITEM_CATEGORIES)
+    name = models.CharField(max_length=50, choices=CARAVAN_BIOMES)
     description = models.TextField()
 
     def __str__(self):
@@ -54,12 +53,15 @@ class Caravan(models.Model):
 # generate list of traders based on biome and level and add them to the caravan, no duplicate jobs
 
     def generate_random_traders(self, num_traders=3):
+        print('generating random traders')
         traders = set()
         while len(traders) < num_traders:
-            trader = Trader.objects.all().order_by('?').first()
+            trader = Trader.objects.filter(
+                Q(biomes__name=self.biome) | Q(biomes__name='any')).order_by('?').first()
             if trader.job not in [trader.job for trader in traders]:
                 traders.add(trader)
-
+            if len(traders) > num_traders:
+                traders.pop()
         self.traders.set(traders)
         self.save()
 
@@ -84,3 +86,16 @@ class Trader(models.Model):
             elif item.job_requirements is None:
                 items.append(item)
         return items
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.biomes.count() == 0:
+            self.biomes.add(Biome.objects.get(name='any'))
+
+        if 'any' in self.biomes.values_list('name', flat=True):
+            self.biomes.clear()
+            super().save(*args, **kwargs)
+
+            self.biomes.set([Biome.objects.get(name='any')])
+        super().save(*args, **kwargs)

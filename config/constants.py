@@ -1,4 +1,5 @@
 CARAVAN_BIOMES = [
+    ('any', 'Any'),
     ('forest', 'Forest'),
     ('island', 'Island'),
     ('tropical', 'Tropical'),
