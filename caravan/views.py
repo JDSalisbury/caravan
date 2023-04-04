@@ -6,6 +6,7 @@ from .serializers import CaravanSerializer, JobSerializer, TraderSerializer
 from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters import rest_framework as filters
 
 
 class CaravanViewset(viewsets.ModelViewSet):
@@ -25,6 +26,17 @@ class JobViewset(viewsets.ModelViewSet):
     serializer_class = JobSerializer
 
 
+class TraderFilter(filters.FilterSet):
+    job = filters.CharFilter(field_name='job__name')
+    biome = filters.CharFilter(field_name='biomes__name')
+
+    class Meta:
+        model = Trader
+        fields = ['job', 'biome']
+
+
 class TraderViewset(viewsets.ModelViewSet):
     queryset = Trader.objects.all()
     serializer_class = TraderSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = TraderFilter
