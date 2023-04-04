@@ -38,9 +38,9 @@ class TraderFilter(filters.FilterSet):
 
     def filter_description(self, queryset, name, value):
         print(value)
-        if value == True:
+        if value is True:
             return queryset.filter(description__isnull=False)
-        elif value == False:
+        elif value is False:
             return queryset.filter(description__isnull=True)
         else:
             return queryset
