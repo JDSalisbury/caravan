@@ -1,0 +1,1 @@
+# override django admin panel
