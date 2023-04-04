@@ -29,10 +29,25 @@ class JobViewset(viewsets.ModelViewSet):
 class TraderFilter(filters.FilterSet):
     job = filters.CharFilter(field_name='job__name')
     biome = filters.CharFilter(field_name='biomes__name')
+    gold = filters.NumberFilter(field_name='starting_gold', lookup_expr='lte')
+    starting_gold = filters.NumberFilter(field_name='starting_gold')
+    # filter by description if null or not null
+
+    description = filters.BooleanFilter(
+        field_name='description', method='filter_description')
+
+    def filter_description(self, queryset, name, value):
+        print(value)
+        if value == True:
+            return queryset.filter(description__isnull=False)
+        elif value == False:
+            return queryset.filter(description__isnull=True)
+        else:
+            return queryset
 
     class Meta:
         model = Trader
-        fields = ['job', 'biome']
+        fields = ['job', 'biome', 'gold', 'starting_gold', 'description']
 
 
 class TraderViewset(viewsets.ModelViewSet):

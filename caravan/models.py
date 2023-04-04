@@ -71,6 +71,7 @@ class Trader(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     starting_gold = models.PositiveIntegerField()
     biomes = models.ManyToManyField(Biome)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name

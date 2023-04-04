@@ -21,7 +21,8 @@ class TraderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trader
-        fields = ('id', 'name', 'job', 'biomes')
+        fields = ('id', 'name', 'job', 'biomes',
+                  'description', 'starting_gold')
 
 
 class CaravanSerializer(serializers.ModelSerializer):
