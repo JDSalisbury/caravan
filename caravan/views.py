@@ -7,11 +7,29 @@ from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters import rest_framework as filters
+from django.db.models import Q
+
+
+class CaravanFilter(filters.FilterSet):
+    biome = filters.CharFilter(field_name='biome')
+
+    total_gold = filters.NumberFilter(field_name='total_gold')
+    level = filters.NumberFilter(field_name='level')
+    faculty = filters.CharFilter(field_name='faculty', method='faculty_filter')
+
+    def faculty_filter(self, queryset, name, value):
+        return queryset.filter(Q(traders__job__name=value))
+
+    class Meta:
+        model = Caravan
+        fields = ['biome', 'faculty', 'total_gold', 'level']
 
 
 class CaravanViewset(viewsets.ModelViewSet):
     queryset = Caravan.objects.all()
     serializer_class = CaravanSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = CaravanFilter
 
     @action(detail=True, methods=['get'])
     def random_traders(self, request, pk=None):
