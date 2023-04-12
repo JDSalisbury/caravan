@@ -51,9 +51,9 @@ class Caravan(models.Model):
     def faculty(self):
         return [trader.job.name for trader in self.traders.all()]
 
-    @property
-    def total_gold(self):
-        return sum(trader.starting_gold for trader in self.traders.all())
+    # @property
+    # def total_gold(self):
+    #     return sum(trader.starting_gold for trader in self.traders.all())
 
     def __str__(self):
         return self.name

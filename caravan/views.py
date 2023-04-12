@@ -8,21 +8,33 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters import rest_framework as filters
 from django.db.models import Q
+from django.db.models import Sum
 
 
 class CaravanFilter(filters.FilterSet):
     biome = filters.CharFilter(field_name='biome')
 
-    total_gold = filters.NumberFilter(field_name='total_gold')
+    total_gold = filters.NumberFilter(
+        field_name='total_gold', method='total_gold_filter')
     level = filters.NumberFilter(field_name='level')
     faculty = filters.CharFilter(field_name='faculty', method='faculty_filter')
+
+    # def total_gold_filter(self, queryset, name, value):
+    #     # sum of all traders' starting gold then filter by total gold
+    #     return queryset.filter(Q(total_gold__lte=value)).aggergate(sum('traders__starting_gold'))
+
+    def total_gold_filter(self, queryset, name, value):
+        # filter by total gold
+        # queryset = queryset.annotate(total_gold=Sum('traders__starting_gold'))
+        # return queryset.filter(Q(total_gold__lte=value))
+        return queryset.annotate(total_gold=Sum('traders__starting_gold')).filter(total_gold__lte=value)
 
     def faculty_filter(self, queryset, name, value):
         return queryset.filter(Q(traders__job__name=value))
 
     class Meta:
         model = Caravan
-        fields = ['biome', 'faculty', 'total_gold', 'level']
+        fields = ['biome', 'faculty', 'level', 'total_gold']
 
 
 class CaravanViewset(viewsets.ModelViewSet):

@@ -31,4 +31,4 @@ class CaravanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Caravan
         fields = ('id', 'name', 'location', 'biome',
-                  'level', 'total_gold', 'faculty', 'traders')
+                  'level',  'faculty', 'traders')
