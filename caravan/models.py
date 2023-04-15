@@ -25,7 +25,6 @@ class Item(models.Model):
     description = models.TextField()
     price = models.PositiveIntegerField()
     rarity = models.PositiveIntegerField()
-    job_requirements = models.ManyToManyField(Job)
     category = models.CharField(max_length=50, choices=ITEM_CATEGORIES)
     damage_dice = models.CharField(max_length=10, null=True, blank=True)
     damage_type = models.CharField(max_length=50, null=True, blank=True)
@@ -34,7 +33,8 @@ class Item(models.Model):
     armor_type = models.CharField(max_length=50, null=True, blank=True)
     property = models.CharField(max_length=50, null=True, blank=True)
     power = models.CharField(max_length=50, null=True, blank=True)
-    biomes = models.ManyToManyField(Biome)
+    biomes = models.ManyToManyField(Biome, null=True, blank=True)
+    job_requirements = models.ManyToManyField(Job, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -81,6 +81,19 @@ class Trader(models.Model):
 
     def total_price(self):
         return sum(item.price for item in self.items.all())
+
+    def generate_random_items(self, num_items=10):
+        print('generating random items')
+        items = set()
+        while len(items) < num_items:
+            item = Item.objects.filter(
+                Q(job_requirements__name=self.job) | Q(job_requirements__isnull=True) | Q(job_requirements__name='Trader')).order_by('?').first()
+            if item not in items:
+                items.add(item)
+            if len(items) > num_items:
+                items.pop()
+        self.items.set(items)
+        self.save()
 
     def generate_items(self):
         items = []
