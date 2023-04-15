@@ -2,6 +2,14 @@ import csv
 from .models import Biome, Job, Item
 
 
+def lower_case(string):
+    return string.lower()
+
+
+def capitalize(string):
+    return string.capitalize()
+
+
 def import_csv(file_path):
     with open(file_path, 'r') as csv_file:
         reader = csv.DictReader(csv_file)
@@ -26,6 +34,7 @@ def import_csv(file_path):
             # add related instances of Biome and Job if specified in the CSV
             biomes = row['biomes'].split(',') if row['biomes'] else []
             for biome_name in biomes:
+                biome_name = lower_case(biome_name)
                 try:
                     biome = Biome.objects.get(name=biome_name)
                     my_model.biomes.add(biome)
@@ -36,6 +45,7 @@ def import_csv(file_path):
             job_requirements = row['job_requirements'].split(
                 ',') if row['job_requirements'] else []
             for job_name in job_requirements:
+                job_name = capitalize(job_name)
                 try:
                     job = Job.objects.get(name=job_name)
                     my_model.job_requirements.add(job)
