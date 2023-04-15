@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 # Create your views here.
 from .models import Caravan, Job, Trader
-from .serializers import CaravanSerializer, JobSerializer, TraderSerializer
+from .serializers import CaravanSerializer, JobSerializer, TraderDetailSerializer, TraderSerializer
 from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -19,14 +19,7 @@ class CaravanFilter(filters.FilterSet):
     level = filters.NumberFilter(field_name='level')
     faculty = filters.CharFilter(field_name='faculty', method='faculty_filter')
 
-    # def total_gold_filter(self, queryset, name, value):
-    #     # sum of all traders' starting gold then filter by total gold
-    #     return queryset.filter(Q(total_gold__lte=value)).aggergate(sum('traders__starting_gold'))
-
     def total_gold_filter(self, queryset, name, value):
-        # filter by total gold
-        # queryset = queryset.annotate(total_gold=Sum('traders__starting_gold'))
-        # return queryset.filter(Q(total_gold__lte=value))
         return queryset.annotate(total_gold=Sum('traders__starting_gold')).filter(total_gold__lte=value)
 
     def faculty_filter(self, queryset, name, value):
@@ -83,3 +76,14 @@ class TraderViewset(viewsets.ModelViewSet):
     serializer_class = TraderSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = TraderFilter
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'retrieve':
+            return TraderDetailSerializer(*args, **kwargs)
+        return super().get_serializer(*args, **kwargs)
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = TraderDetailSerializer(instance)
+
+    #     return Response(serializer.data)

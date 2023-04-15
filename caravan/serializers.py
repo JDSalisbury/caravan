@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Caravan, Job, Trader, Biome
+from .models import Caravan, Item, Job, Trader, Biome
 
 
 class BiomeSerializer(serializers.ModelSerializer):
@@ -12,6 +12,23 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = '__all__'
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'
+
+
+class TraderDetailSerializer(serializers.ModelSerializer):
+    job = JobSerializer()
+    biomes = BiomeSerializer(many=True)
+    items = ItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Trader
+        fields = ('name', 'job', 'biomes',
+                  'description', 'starting_gold', 'items')
 
 
 class TraderSerializer(serializers.ModelSerializer):

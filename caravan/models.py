@@ -51,14 +51,8 @@ class Caravan(models.Model):
     def faculty(self):
         return [trader.job.name for trader in self.traders.all()]
 
-    # @property
-    # def total_gold(self):
-    #     return sum(trader.starting_gold for trader in self.traders.all())
-
     def __str__(self):
         return self.name
-
-# generate list of traders based on biome and level and add them to the caravan, no duplicate jobs
 
     def generate_random_traders(self, num_traders=3):
         print('generating random traders')
