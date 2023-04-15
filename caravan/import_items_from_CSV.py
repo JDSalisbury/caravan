@@ -30,7 +30,8 @@ def import_csv(file_path):
                     biome = Biome.objects.get(name=biome_name)
                     my_model.biomes.add(biome)
                 except Biome.DoesNotExist:
-                    pass
+                    biome = Biome(name=biome_name, description='Made from CSV')
+                    biome.save()
 
             job_requirements = row['job_requirements'].split(
                 ',') if row['job_requirements'] else []
@@ -39,4 +40,5 @@ def import_csv(file_path):
                     job = Job.objects.get(name=job_name)
                     my_model.job_requirements.add(job)
                 except Job.DoesNotExist:
-                    pass
+                    job = Job(name=job_name, description='Made from CSV')
+                    job.save()
