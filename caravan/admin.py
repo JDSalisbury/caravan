@@ -5,12 +5,18 @@ import pprint
 from django.db.models import Q
 
 
+class ItemInline(admin.TabularInline):
+    model = Trader.items.through
+    extra = 1
+
+
 class TraderAdmin(admin.ModelAdmin):
     list_display = ('name', 'job', 'description',
                     'starting_gold', )
     list_filter = ('job', 'biomes')
     search_fields = ('name', 'job', 'description',
                      'starting_gold', 'biomes')
+    inlines = [ItemInline]
     # filter list of items by job
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
