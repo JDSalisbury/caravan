@@ -33,8 +33,8 @@ class Item(models.Model):
     armor_type = models.CharField(max_length=50, null=True, blank=True)
     property = models.CharField(max_length=50, null=True, blank=True)
     power = models.CharField(max_length=50, null=True, blank=True)
-    biomes = models.ManyToManyField(Biome, null=True, blank=True)
-    job_requirements = models.ManyToManyField(Job, null=True, blank=True)
+    biomes = models.ManyToManyField(Biome, blank=True)
+    job_requirements = models.ManyToManyField(Job, blank=True)
 
     def __str__(self):
         return self.name
@@ -116,3 +116,20 @@ class Trader(models.Model):
 
             self.biomes.set([Biome.objects.get(name='any')])
         super().save(*args, **kwargs)
+
+
+class caravan_trader_items(models.Model):
+    trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(null=True, blank=True)
+    price = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.trader} - {self.item} - {self.count}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('trader', 'item')
+        # db_table = 'caravan_trader_items'

@@ -1,5 +1,5 @@
 import csv
-from .models import Biome, Job, Item
+from ...models import Biome, Job, Item
 
 
 def lower_case(string):
