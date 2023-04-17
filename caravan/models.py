@@ -118,18 +118,19 @@ class Trader(models.Model):
         super().save(*args, **kwargs)
 
 
-class caravan_trader_items(models.Model):
-    trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    count = models.PositiveIntegerField(null=True, blank=True)
-    price = models.PositiveIntegerField(null=True, blank=True)
+# class caravan_trader_items(models.Model):
+#     trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
+#     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+#     count = models.PositiveIntegerField(null=True, blank=True)
+#     price = models.PositiveIntegerField(null=True, blank=True)
 
-    def __str__(self):
-        return f'{self.trader} - {self.item} - {self.count}'
+#     def __str__(self):
+#         return f'{self.trader} - {self.item} - {self.count}'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         super().save(*args, **kwargs)
 
-    class Meta:
-        unique_together = ('trader', 'item')
-        # db_table = 'caravan_trader_items'
+#     class Meta:
+#         unique_together = ('trader', 'item')
+#         db_table = 'caravan_trader_items'
+#         managed = False
