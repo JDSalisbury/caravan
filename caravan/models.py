@@ -74,7 +74,7 @@ class Trader(models.Model):
     starting_gold = models.PositiveIntegerField()
     biomes = models.ManyToManyField(Biome)
     description = models.TextField(blank=True, null=True)
-    items = models.ManyToManyField(Item, blank=True, through='TraderItem')
+    items = models.ManyToManyField(Item, blank=True, through='TradersItemMeta')
 
     def __str__(self):
         return self.name
@@ -118,7 +118,7 @@ class Trader(models.Model):
         super().save(*args, **kwargs)
 
 
-# class CaravanTraderItem(models.Model):
+# class CaravanTradersItemMeta(models.Model):
 #     trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
 #     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 #     quantity = models.PositiveIntegerField(default=0)
@@ -133,7 +133,7 @@ class Trader(models.Model):
 #     class Meta:
 #         unique_together = ('trader', 'item')c
 
-class TraderItem(models.Model):
+class TradersItemMeta(models.Model):
     trader = models.ForeignKey(
         Trader, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
